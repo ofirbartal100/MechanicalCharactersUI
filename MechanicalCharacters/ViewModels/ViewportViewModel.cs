@@ -1,14 +1,13 @@
 ﻿using MechanicalCharacters.Utils;
 using MechanicalCharacters.Utils.Components;
-using Newtonsoft.Json;
 using Prism.Events;
 using Prism.Mvvm;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Linq;
 using System.Windows;
+using System.Windows.Media;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 
@@ -27,7 +26,9 @@ namespace MechanicalCharacters.ViewModels
         }
     }
 
-    public class SolvedAssemblyEvent : PubSubEvent<JsonForAssemblies> { }
+    public class SolvedAssemblyEvent : PubSubEvent<AssemblySolver.CurveAssemblyAndAlignments> { }
+
+    public class SolvedCurveEvent : PubSubEvent<List<Point>> { }
 
     public class ToggleAnimationEvent : PubSubEvent<bool>
     {
@@ -42,8 +43,8 @@ namespace MechanicalCharacters.ViewModels
         private readonly int counter = 0;
         private readonly IEventAggregator eventAggregator;
         private IEventAggregator _eventAggregator;
-        private bool IsEndPointSelected = false;
-        private bool IsInEditCurveMode = false;
+        private bool IsEndPointSelected = true;
+        private bool IsInEditCurveMode = true;
         private DispatcherTimer t = new DispatcherTimer();
 
         public ViewportViewModel(IEventAggregator eventAggregator)
@@ -56,23 +57,23 @@ namespace MechanicalCharacters.ViewModels
             eventAggregator.GetEvent<GenerateAssemblyEvent>().Subscribe(GenerateAssemblyEventHandler);
 
             //debug
-            GeneratedAssembly = new Assembly()
-            {
-                Components = new List<IComponent>()
-                {
-                    new Gear(100, 100),
-                    new Stick(new StickConfiguration()
-                    {
-                        Anchor = new Point(50, 50),
-                        Length = 50,
-                        Length2 = 10,
-                        Rotation = 50
-                    })
-                }
-            };
+            //GeneratedAssembly = new Assembly()
+            //{
+            //    Components = new List<IComponent>()
+            //    {
+            //        new Gear(300, 100),
+            //        new Stick(new StickConfiguration()
+            //        {
+            //            Anchor = new Point(250, 50),
+            //            Length = 50,
+            //            Length2 = 10,
+            //            Rotation = 50
+            //        })
+            //    }
+            //};
 
-            Model = new ArticulatedModel("");
-            PinConnection.Connect(GeneratedAssembly.Components[0], GeneratedAssembly.Components[1], new Point(45, 45), new Point(115, 115));
+            Model = new ArticulatedModel();
+            //PinConnection.Connect(GeneratedAssembly.Components[0], GeneratedAssembly.Components[1], new Point(245, 45), new Point(315, 115));
 
             //GeneratedAssembly.LoadConfiguration();
 
@@ -91,8 +92,9 @@ namespace MechanicalCharacters.ViewModels
         }
 
         public ObservableCollection<UIElement> CanvasElements { get; set; }
+        public List<Ellipse> CurvesElements { get; set; } = new List<Ellipse>();
 
-        public Assembly GeneratedAssembly { get; set; }
+        //public Assembly GeneratedAssembly { get; set; }
 
         public ArticulatedModel Model { get; set; }
 
@@ -134,27 +136,25 @@ namespace MechanicalCharacters.ViewModels
 
         private void GenerateAssemblyEventHandler()
         {
-            Point[] anchorRelativeSampled = UserInputs[0].GetSampledCurve(Model.Anchor);
+            Point[] anchorRelativeSampled = UserInputs[0].GetSampledCurve();
             ConnectionInfo info;
             if (IsEndPointSelected)
             {
-                var target = (CanvasElements.First(element =>
-                    element is Ellipse &&
-                    ((Ellipse)element).Tag is ConnectionInfo &&
-                    ((ConnectionInfo)((Ellipse)element).Tag).IsSelected)) as Ellipse;
+                //var target = (CanvasElements.First(element =>
+                //    element is Ellipse &&
+                //    ((Ellipse)element).Tag is ConnectionInfo &&
+                //    ((ConnectionInfo)((Ellipse)element).Tag).IsSelected)) as Ellipse;
 
-                if (target == null) return;
-                info = target?.Tag as ConnectionInfo;
+                //if (target == null) return;
+                //info = target?.Tag as ConnectionInfo;
 
                 GenerateAssemblyToFitCurveEvent.GenerateAssemblyToFitCurveEventArgs args =
                     new GenerateAssemblyToFitCurveEvent.GenerateAssemblyToFitCurveEventArgs()
                     {
-                        SampledeCurve = anchorRelativeSampled, Info = info
+                        SampledeCurve = anchorRelativeSampled,
+                        Info = null
                     };
                 _eventAggregator.GetEvent<GenerateAssemblyToFitCurveEvent>().Publish(args);
-
-                //Assembly a = GenerateAssembly(sampled,target)
-                //Renders
             }
         }
 
@@ -189,17 +189,62 @@ namespace MechanicalCharacters.ViewModels
         {
             CanvasElements.Clear();
             CanvasElements.AddRange(Model.GetDrawing());
-            CanvasElements.AddRange(GeneratedAssembly.GetDrawing());
+            //CanvasElements.AddRange(GeneratedAssembly.GetDrawing());
             //AssembliesDrawable.ForEach(assembly => CanvasElements.AddRange(assembly.GetDrawing()));
 
             UserInputs.ForEach(curve => CanvasElements.AddRange(curve.GetDrawing()));
+            CurvesElements.ForEach(curve => CanvasElements.Add(curve));
+
+
+            //// fixes y axis
+
+            //for (int i = 0; i < CanvasElements.Count; i++)
+            //{
+            //    CanvasElements[i].
+            //}
         }
 
-        private void SolvedAssemblyEventHandler(JsonForAssemblies obj)
+        private void SolvedAssemblyEventHandler(AssemblySolver.CurveAssemblyAndAlignments obj)
         {
+            //transform curve with 0 mean
+            var mean = obj.c_a.Curve.Points.Aggregate(new Point(), (m, p) =>
+            {
+                m.X += p.X;
+                m.Y += p.Y;
+                return m;
+            });
+            mean.X /= 72;
+            mean.Y /= 72;
+            double toflip = 1;//obj.ToFlip ? -1 : 1;
+            var pts = obj.c_a.Curve.Points.Select(point =>
+                {
+
+                    var x = (point.X - mean.X);
+                    var y = (point.Y - mean.Y)* toflip;
+
+                    var rotatedX = (Math.Cos(-obj.RadRotation) * x -
+                                   Math.Sin(-obj.RadRotation) * y) * obj.Scale;
+                    var rotatedY = (Math.Cos(-obj.RadRotation) * y +
+                                   Math.Sin(-obj.RadRotation) * x) * obj.Scale ;
+                    return new Point(rotatedX + obj.MeanPoint.X, rotatedY + obj.MeanPoint.Y);
+                }
+            ).ToList();
+
+            //plot
+            CurvesElements.Clear();
+            CurvesElements.AddRange(pts.Select(point =>
+            {
+                var tran2 = new TranslateTransform(point.X - 2, point.Y - 2);
+                return new Ellipse() { Width = 4, Height = 4, Fill = Brushes.Green, RenderTransform = tran2 };
+            }));
+            Model= new ArticulatedModel();
+            Model.Load(obj);
             //load from JsonForAssemblies
             //add to canvas
+
+            Render();
         }
+
         private void ToggleAnimationEventHandler(bool obj)
         {
             if (obj)

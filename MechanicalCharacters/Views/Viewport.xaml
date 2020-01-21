@@ -9,14 +9,21 @@
     d:DesignWidth="1920"
     prism:ViewModelLocator.AutoWireViewModel="True"
     mc:Ignorable="d">
-    <Grid Background="BlueViolet">
+    <Grid
+        Width="800"
+        Height="450"
+        Background="BlueViolet">
         <ItemsControl ItemsSource="{Binding CanvasElements}">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
                     <Canvas
                         Background="White"
                         MouseLeftButtonUp="UIElement_OnMouseLeftUp"
-                        MouseRightButtonUp="UIElement_OnMouseRightUp" />
+                        MouseRightButtonUp="UIElement_OnMouseRightUp">
+                        <Canvas.LayoutTransform>
+                            <ScaleTransform ScaleX="1" ScaleY="-1" />
+                        </Canvas.LayoutTransform>
+                    </Canvas>
                 </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
         </ItemsControl>

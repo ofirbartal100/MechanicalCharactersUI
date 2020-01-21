@@ -25,15 +25,7 @@
             Command="{Binding ToggleAnimationClickCommand}"
             CommandParameter="{Binding Path=IsChecked, RelativeSource={RelativeSource Self}}"
             FontSize="30">
-            Toggle Animation
-        </ToggleButton>
-        <ToggleButton
-            Width="300"
-            Height="70"
-            Command="{Binding ToggleEditCurveClickCommand}"
-            CommandParameter="{Binding Path=IsChecked, RelativeSource={RelativeSource Self}}"
-            FontSize="30">
-            Toggle Edit Curve
+            Clear
         </ToggleButton>
     </UniformGrid>
 </UserControl>

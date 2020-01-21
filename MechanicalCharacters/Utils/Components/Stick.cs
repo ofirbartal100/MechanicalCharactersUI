@@ -13,7 +13,7 @@ namespace MechanicalCharacters.Utils.Components
     {
         public Point Anchor { get; set; }
         public double Length { get; set; }
-        public double Length2 { get; set; }
+        public double Length2 { get; set; } = 10;
         public double Rotation { get; set; }
     }
     public class Stick : IDrawable , IComponent
@@ -29,7 +29,8 @@ namespace MechanicalCharacters.Utils.Components
         {
             var DrawingElements = new List<UIElement>();
 
-            var translate = new TranslateTransform(Configuration.Anchor.X - Configuration.Length / 2, Configuration.Anchor.Y - Configuration.Length2 /2);
+            var translate = new TranslateTransform(Configuration.Anchor.X , Configuration.Anchor.Y - Configuration.Length2 / 2);
+            //var translate = new TranslateTransform(Configuration.Anchor.X , Configuration.Anchor.Y );
             var rotate = new RotateTransform(Configuration.Rotation, Configuration.Anchor.X, Configuration.Anchor.Y);
             TransformGroup tg = new TransformGroup
             {

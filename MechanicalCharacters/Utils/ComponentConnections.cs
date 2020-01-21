@@ -1,8 +1,11 @@
-﻿using MechanicalCharacters.Utils.Components;
+﻿using System;
+using MechanicalCharacters.Utils.Components;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Shapes;
+
 
 namespace MechanicalCharacters.Utils
 {
@@ -47,7 +50,7 @@ namespace MechanicalCharacters.Utils
 
             var pin = new Ellipse() { Width = 10, Height = 10, Margin = new Thickness(ConnectionPoint.X - 5, ConnectionPoint.Y - 5, 0, 0) };
             pin.Tag = Info;
-            pin.Fill = Info.IsSelected ? Brushes.DarkSlateBlue : Brushes.LightCyan;
+            pin.Fill = Info.IsSelected ? Brushes.Orange : Brushes.DarkSlateBlue;
             pin.MouseEnter += (sender, args) =>
             {
                 if (((ConnectionInfo)pin.Tag).IsSelected == false)

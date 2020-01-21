@@ -1,5 +1,4 @@
-﻿using Extreme.Mathematics;
-using MechanicalCharacters.ViewModels;
+﻿using MechanicalCharacters.ViewModels;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -12,6 +11,39 @@ namespace MechanicalCharacters.Utils
 {
     public static class AssemblySolver
     {
+        private static readonly object key = new object();
+        private static readonly int count = 0;
+        public static Services.PythonPaths Paths { get; set; } = new Services.PythonPaths();
+
+        static AssemblySolver()
+        {
+            lock (key)
+            {
+                Services.Tracker.Track(Paths);
+                if (string.IsNullOrEmpty(Paths.PythonPath))
+                {
+                    Paths.PythonPath = "No Path Given";
+                    Services.Tracker.Persist(Paths);
+                }
+                if (string.IsNullOrEmpty(Paths.PythonScriptPath))
+                {
+                    Paths.PythonScriptPath = "No Path Given";
+                    Services.Tracker.Persist(Paths);
+                }
+
+                if (!File.Exists(Paths.PythonPath))
+                {
+                    MessageBox.Show("No valid PythonPath found at: \"" + Paths.PythonPath + "\" \nPlease Change In The Configuration File At: " + Environment.CurrentDirectory);
+                    Environment.Exit(1);
+                }
+                else if (!File.Exists(Paths.PythonScriptPath))
+                {
+                    MessageBox.Show("No valid PythonScriptPath found at: \"" + Paths.PythonScriptPath + "\" \nPlease Change In The Configuration File At: " + Environment.CurrentDirectory);
+                    Environment.Exit(1);
+                }
+            }
+        }
+
         public static CurveAssemblyAndAlignments SolveForAssembly(GenerateAssemblyToFitCurveEvent.GenerateAssemblyToFitCurveEventArgs args)
         {
             //run python and get json
@@ -21,8 +53,8 @@ namespace MechanicalCharacters.Utils
             var meanY = args.SampledeCurve.Sum(point => point.Y) / args.SampledeCurve.Length;
             var pts = args.SampledeCurve.Select(point => new List<double>() { point.X - meanX, point.Y - meanY, 0 }).ToList();
             var max = pts.Max(list => list.Max(d => Math.Abs(d)));
-           
-            var pts2 = pts.Select(list => new List<double>() { list[0] , list[1] , 0 }).ToList();
+
+            var pts2 = pts.Select(list => new List<double>() { list[0], list[1], 0 }).ToList();
 
             var data = new double[72, 3];
             for (int i = 0; i < 72; i++)
@@ -49,12 +81,12 @@ namespace MechanicalCharacters.Utils
             string json_object = JsonConvert.SerializeObject(pts2);
             System.IO.File.WriteAllText(json_path, json_object);
             //add parameters here
-            string json = RunPythonScript($"\"D:\\TAU\\Courses\\Modeling Manifacture And 3D Printing Algorithms\\mechanical_characters\\generate_assembly_for_user_curve.py\" -json_path {json_path}");
+            string json = RunPythonScript("\"" + Paths.PythonScriptPath + "\" -json_path " + json_path);
 
             JsonOfCurveAndAssembly c_a = JsonConvert.DeserializeObject<JsonOfCurveAndAssembly>(json);
 
-            var maxOfResult = c_a.Curve.Points.Max(point =>Math.Abs(point.X));
-           
+            var maxOfResult = c_a.Curve.Points.Max(point => Math.Abs(point.X));
+
             //parse json into a Curve
             CurveAssemblyAndAlignments caa = new CurveAssemblyAndAlignments()
             {
@@ -78,17 +110,9 @@ namespace MechanicalCharacters.Utils
 
         private static string RunPythonScript(string cmd)
         {
-            //var pythonPath = "C:\\Users\\ofir\\Anaconda3\\python.exe";
-            var pythonPath = "C:\\Users\\ofir\\AppData\\Local\\Programs\\Python\\Python36-32\\python.exe";
-            if (!File.Exists(pythonPath))
-            {
-                MessageBox.Show("No python file found at: " + pythonPath);
-                return "";
-            }
-
             ProcessStartInfo StartInfo = new ProcessStartInfo
             {
-                FileName = pythonPath,
+                FileName = Paths.PythonPath,
                 //Arguments = string.Format("\"{0}\" \"{1}\""),
 
                 //StackOverflow:

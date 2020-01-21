@@ -72,6 +72,7 @@
     <Compile Include="Utils\IJsonLoadable.cs" />
     <Compile Include="Utils\JsonParsing.cs" />
     <Compile Include="Utils\ArticulatedModel.cs" />
+    <Compile Include="Utils\Services.cs" />
     <Compile Include="ViewModels\ControlsViewModel.cs" />
     <Compile Include="ViewModels\ViewportViewModel.cs" />
     <Compile Include="ViewModels\WorkspaceViewModel.cs" />
@@ -141,20 +142,11 @@
     <PackageReference Include="alglib2.dll">
       <Version>3.10.4</Version>
     </PackageReference>
-    <PackageReference Include="Extreme.Numerics">
-      <Version>7.0.11</Version>
-    </PackageReference>
     <PackageReference Include="Jot">
       <Version>2.1.4</Version>
     </PackageReference>
-    <PackageReference Include="MathNet.Numerics">
-      <Version>4.9.0</Version>
-    </PackageReference>
     <PackageReference Include="Newtonsoft.Json">
       <Version>12.0.3</Version>
-    </PackageReference>
-    <PackageReference Include="PostSharp">
-      <Version>6.4.5</Version>
     </PackageReference>
     <PackageReference Include="Prism.Core">
       <Version>7.2.0.1422</Version>

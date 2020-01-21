@@ -12,12 +12,6 @@ namespace MechanicalCharacters.Utils
     {
         public ArticulatedModel(string json = null)
         {
-            //if (json == null)
-            //{
-            //    json =
-            //        @"[{'type': 'Gear', 'id': 36, 'length': 5.55, 'position': [2.288692311318173e-07, 4.895587025129037e-07, 0.0], 'orientation': [0.0, 0.0, 2.209324028986863e-05]}, {'type': 'Stick', 'id': 37, 'length': 13.15, 'position': [4.249999986317227, 0.6300021581761233, 0.0], 'orientation': [0.0, 0.0, 58.463094656953984]}, {'type': 'Gear', 'id': 38, 'length': 2.04, 'position': [9.999999821511748, -6.405266551404989e-07, 0.0], 'orientation': [0.0, 0.0, 9.841809822117343e-05]}, {'type': 'Stick', 'id': 39, 'length': 10.04, 'position': [10.999999031524364, 1.1081907387065795e-06, 0.0], 'orientation': [0.0, 0.0, 107.95559391358745]}, {'type': 'Gear', 'id': 40, 'length': 1, 'position': [1.483131534814337e-07, 3.0237271535602095e-07, 0.0], 'orientation': [0.0, 0.0, 89.99999938146728]}, {'type': 'Gear', 'id': 41, 'length': 1, 'position': [9.999999933412182, -3.661293020983619e-07, 0.0], 'orientation': [0.0, 0.0, 89.99999938146728]}]";
-            //}
-            //Load(json);
         }
 
         public List<IComponent> Components { get; set; } = new List<IComponent>();

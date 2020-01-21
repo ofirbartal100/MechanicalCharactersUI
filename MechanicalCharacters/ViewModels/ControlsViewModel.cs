@@ -14,7 +14,7 @@ namespace MechanicalCharacters.ViewModels
     }
     public class ControlsViewModel : BindableBase
     {
-        public ICommand ToggleAnimationClickCommand { get; set; }
+        public ICommand ClearClickCommand { get; set; }
         public ICommand ToggleEditCurveClickCommand { get; set; }
         public ICommand GenerateAssemblyClickCommand { get; set; }
 
@@ -22,7 +22,7 @@ namespace MechanicalCharacters.ViewModels
         public ControlsViewModel(IEventAggregator eventAggregator)
         {
             _eventAggregator = eventAggregator;
-            ToggleAnimationClickCommand = new DelegateCommand<object>(ToggleAnimationClick);
+            ClearClickCommand = new DelegateCommand(ClearClick);
             ToggleEditCurveClickCommand = new DelegateCommand<object>(ToggleEditCurveClick);
             GenerateAssemblyClickCommand = new DelegateCommand(GenerateAssemblyClick);
         }
@@ -32,10 +32,9 @@ namespace MechanicalCharacters.ViewModels
             _eventAggregator.GetEvent<GenerateAssemblyEvent>().Publish();
         }
 
-        private void ToggleAnimationClick(object obj)
+        private void ClearClick()
         {
-            var b = (bool) obj;
-            _eventAggregator.GetEvent<ToggleAnimationEvent>().Publish(b);
+            _eventAggregator.GetEvent<ClearEvent>().Publish();
         }
         private void ToggleEditCurveClick(object obj)
         {

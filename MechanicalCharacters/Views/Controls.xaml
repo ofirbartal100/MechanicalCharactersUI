@@ -19,13 +19,12 @@
             FontSize="30">
             Generate Assembly
         </Button>
-        <ToggleButton
+        <Button
             Width="300"
             Height="70"
-            Command="{Binding ToggleAnimationClickCommand}"
-            CommandParameter="{Binding Path=IsChecked, RelativeSource={RelativeSource Self}}"
+            Command="{Binding ClearClickCommand}"
             FontSize="30">
             Clear
-        </ToggleButton>
+        </Button>
     </UniformGrid>
 </UserControl>

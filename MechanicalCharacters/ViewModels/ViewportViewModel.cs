@@ -38,6 +38,10 @@ namespace MechanicalCharacters.ViewModels
     {
     }
 
+    public class ClearEvent : PubSubEvent
+    {
+    }
+
     public class ViewportViewModel : BindableBase
     {
         private readonly int counter = 0;
@@ -52,7 +56,7 @@ namespace MechanicalCharacters.ViewModels
             _eventAggregator = eventAggregator;
             UserInputs = new List<Curve>() { new Curve() };
             CanvasElements = new ObservableCollection<UIElement>();
-            eventAggregator.GetEvent<ToggleAnimationEvent>().Subscribe(ToggleAnimationEventHandler);
+            eventAggregator.GetEvent<ClearEvent>().Subscribe(ClearEventHandler);
             eventAggregator.GetEvent<ToggleEditCurveEvent>().Subscribe(ToggleEditCurveEventHandler);
             eventAggregator.GetEvent<GenerateAssemblyEvent>().Subscribe(GenerateAssemblyEventHandler);
 
@@ -108,6 +112,15 @@ namespace MechanicalCharacters.ViewModels
                 Render();
             }
         }
+
+        private void ClearEventHandler()
+        {
+            UserInputs[0].PointsList.Clear();
+            CurvesElements.Clear();
+            Model = new ArticulatedModel();
+            Render();
+        }
+
 
         public void MouseLeftUpCommand(Point position)
         {

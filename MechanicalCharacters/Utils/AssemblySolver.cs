@@ -30,15 +30,25 @@ namespace MechanicalCharacters.Utils
                     Paths.PythonScriptPath = "No Path Given";
                     Services.Tracker.Persist(Paths);
                 }
+                if (string.IsNullOrEmpty(Paths.DBPath))
+                {
+                    Paths.DBPath = "No Path Given";
+                    Services.Tracker.Persist(Paths);
+                }
 
                 if (!File.Exists(Paths.PythonPath))
                 {
                     MessageBox.Show("No valid PythonPath found at: \"" + Paths.PythonPath + "\" \nPlease Change In The Configuration File At: " + Environment.CurrentDirectory);
                     Environment.Exit(1);
                 }
-                else if (!File.Exists(Paths.PythonScriptPath))
+                if (!File.Exists(Paths.PythonScriptPath))
                 {
                     MessageBox.Show("No valid PythonScriptPath found at: \"" + Paths.PythonScriptPath + "\" \nPlease Change In The Configuration File At: " + Environment.CurrentDirectory);
+                    Environment.Exit(1);
+                }
+                if (!File.Exists(Paths.DBPath))
+                {
+                    MessageBox.Show("No valid DBPath found at: \"" + Paths.DBPath + "\" \nPlease Change In The Configuration File At: " + Environment.CurrentDirectory);
                     Environment.Exit(1);
                 }
             }
@@ -81,7 +91,7 @@ namespace MechanicalCharacters.Utils
             string json_object = JsonConvert.SerializeObject(pts2);
             System.IO.File.WriteAllText(json_path, json_object);
             //add parameters here
-            string json = RunPythonScript("\"" + Paths.PythonScriptPath + "\" -json_path " + json_path);
+            string json = RunPythonScript("\"" + Paths.PythonScriptPath + "\" -json_path " + json_path + " -db_path \"" + Paths.DBPath + "\"");
 
             JsonOfCurveAndAssembly c_a = JsonConvert.DeserializeObject<JsonOfCurveAndAssembly>(json);
 

@@ -14,7 +14,7 @@ namespace MechanicalCharacters.Utils
         {
             // tell Jot how to track Window objects
             Tracker.Configure<PythonPaths>()
-                .Id(d => "PythonPaths").Properties(d => new { d.PythonPath, d.PythonScriptPath });
+                .Id(d => "PythonPaths").Properties(d => new { d.PythonPath, d.PythonScriptPath, d.DBPath });
         }
 
         public class PythonPaths
@@ -25,6 +25,7 @@ namespace MechanicalCharacters.Utils
 
             public string PythonPath { get; set; }
             public string PythonScriptPath { get; set; }
+            public string DBPath { get; set; }
         }
     }
 }

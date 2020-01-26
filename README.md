@@ -53,4 +53,4 @@ Example of configured file:
 
 For [Mechanical Characters](https://github.com/ofirbartal100/Mechanical_Characters)
 
-For [Mechanical Characters UI](https://github.com/ofirbartal100/MechanicalCharactersUI)
+For [Learning The Wights Of A](https://github.com/ofirbartal100/Mechanical_Characters_Learning_A)

@@ -91,7 +91,7 @@ namespace MechanicalCharacters.Utils
             string json_object = JsonConvert.SerializeObject(pts2);
             System.IO.File.WriteAllText(json_path, json_object);
             //add parameters here
-            string json = RunPythonScript("\"" + Paths.PythonScriptPath + "\" -json_path " + json_path + " -db_path \"" + Paths.DBPath + "\"");
+            string json = RunPythonScript("\"" + Paths.PythonScriptPath + "\" -json_path \"" + json_path + "\" -db_path \"" + Paths.DBPath + "\"");
 
             JsonOfCurveAndAssembly c_a = JsonConvert.DeserializeObject<JsonOfCurveAndAssembly>(json);
 
